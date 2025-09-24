@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Employee Status</title>
+</head>
+<body>
+    <h1>Employee Status Debug</h1>
+    <div id="result"></div>
+    
+    <script>
+        // Get token from localStorage (assuming you're logged in)
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            document.getElementById('result').innerHTML = 'No token found in localStorage';
+        } else {
+            fetch('/api/employee/aadhaar-status', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = `
+                    <h2>API Response:</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <h2>Analysis:</h2>
+                    <p>aadhaarVerified: ${data.aadhaarVerified}</p>
+                    <p>isEmployeeInCompany: ${data.isEmployeeInCompany}</p>
+                    <p>Should allow HR access: ${data.aadhaarVerified && data.isEmployeeInCompany}</p>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            });
+        }
+    </script>
+</body>
+</html>
